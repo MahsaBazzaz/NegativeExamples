@@ -1,0 +1,3 @@
+[submodule "TheGGLC"]
+	path = TheGGLC
+	url = https://github.com/TheGGLC/TheGGLC.git
