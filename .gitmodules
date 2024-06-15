@@ -1,3 +1,6 @@
 [submodule "level2image"]
 	path = level2image
 	url = https://github.com/crowdgames/level2image.git
+[submodule "TheGGLCTexts"]
+	path = TheGGLCTexts
+	url = https://github.com/MahsaBazzaz/TheGGLCTexts.git
