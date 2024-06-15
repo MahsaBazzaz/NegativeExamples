@@ -1,0 +1,14 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+Pillow = "*"
+matplotlib = "*"
+seaborn = "*"
+numpy = "*"
+scikit_learn = "*"
+torch = "*"
+torchvision = "*"
+tqdm = "*"
