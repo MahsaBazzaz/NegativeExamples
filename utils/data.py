@@ -10,7 +10,7 @@ cave_chars_unique = sorted(list(["-","X", "}", "{"]))
 cave_doors_chars_unique = sorted(list(["-","X", "}", "{", "b", "B"]))
 cave_portals_chars_unique = sorted(list(["-","X", "0", "1", "2", "3"]))
 vertical_chars_unique = sorted(list(["-","X", "}", "{"]))
-slide_chars_unique = sorted(list(["-","X", "}", "{"]))
+slide_chars_unique = sorted(list(["-","X", "}", "{", "#"]))
 sokoban_chars_unique = sorted(list(["-","X", "@", "#", "o"]))
 
 def find_matching_file(pattern):
@@ -22,15 +22,15 @@ def get_positive(game):
         int2char = dict(enumerate(platform_chars_unique))
     elif game == "cave":
         int2char = dict(enumerate(cave_chars_unique))
-    elif game == "cavedoors":
+    elif game == "cave_doors":
         int2char = dict(enumerate(cave_doors_chars_unique))
-    elif game == "caveportal":
+    elif game == "cave_portal":
         int2char = dict(enumerate(cave_portals_chars_unique))
     elif game == "vertical":
         int2char = dict(enumerate(vertical_chars_unique))
     elif game == "slide":
         int2char = dict(enumerate(slide_chars_unique))
-    elif game == "sokoban":
+    elif game == "crates":
         int2char = dict(enumerate(sokoban_chars_unique))
 
     char2int = {ch: ii for ii, ch in int2char.items()}

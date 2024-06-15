@@ -73,7 +73,7 @@ X_pos, X_neg = make_arrays_equal_length(X_pos, X_neg)
 print("number of playble levels after balance: ", len(X_pos))
 print("number of unplayble levels after balance: ", len(X_neg))
 
-z_dims = 10 #Numer different title types
+z_dims = X_pos.shape[3] #Numer different title types
 num_batches = X_pos.shape[0] / opt.batchSize
 
 X_onehot_pos = np.rollaxis(X_pos, 3, 1)

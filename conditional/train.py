@@ -82,7 +82,7 @@ y = np.concatenate((y_pos, y_neg))
 print(X.shape)
 print(y.shape)
 
-z_dims = 10 #Numer different title types
+z_dims = X_pos.shape[3] #Numer different title types
 
 shape = y.shape
 if len(shape) == 1:

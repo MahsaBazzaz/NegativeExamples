@@ -72,7 +72,7 @@ X, y = get_positive(opt.game)
 
 map_size = 64
 
-z_dims = 10 #Numer different title types
+z_dims = X.shape[3] #Numer different title types
 
 num_batches = X.shape[0] / opt.batchSize
 
