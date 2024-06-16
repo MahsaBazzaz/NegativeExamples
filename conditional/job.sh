@@ -6,8 +6,8 @@
 #SBATCH --mem=50G
 #SBATCH --time=11:59:00
 #SBATCH --job-name=myjob
-#SBATCH --output=../log/conditional/output_%j.txt
-#SBATCH --error=../log/conditional/error_%j.txt
+#SBATCH --output=log/conditional/output_%j.txt
+#SBATCH --error=log/conditional/error_%j.txt
 module load anaconda3/2022.05
 module load python/3.8.1
 pip install -r requirements.txt
@@ -21,6 +21,6 @@ from=$2
 to=$3
 instance=$4
 
-command="python train.py --s $from --f $to --game $game --instance $instance --experiment ../../../../scratch/bazzaz.ma/NegativeExample/models --cuda"
+command="python train.py --s $from --f $to --game $game --instance $instance --experiment ../../../scratch/bazzaz.ma/NegativeExample/models --cuda"
 echo $command
 $command
