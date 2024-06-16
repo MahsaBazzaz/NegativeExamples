@@ -127,3 +127,69 @@ def make_arrays_equal_length(arr1, arr2):
         np.random.shuffle(arr2)  # Shuffle the bigger array
         arr2 = arr2[:len1]
     return np.array(arr1), np.array(arr2)
+
+def map_output_to_symbols(game, integers):
+    if game == "platform":
+        int2char = dict(enumerate(platform_chars_unique))
+    elif game == "cave":
+        int2char = dict(enumerate(cave_chars_unique))
+    elif game == "cave_doors":
+        int2char = dict(enumerate(cave_doors_chars_unique))
+    elif game == "cave_portal":
+        int2char = dict(enumerate(cave_portals_chars_unique))
+    elif game == "vertical":
+        int2char = dict(enumerate(vertical_chars_unique))
+    elif game == "slide":
+        int2char = dict(enumerate(slide_chars_unique))
+    elif game == "crates":
+        int2char = dict(enumerate(sokoban_chars_unique))
+    return [[int2char[i.item()] for i in row] for row in integers]
+
+def get_reach_move(game):
+    if game == "platform":
+        return "platform"
+    elif game == "cave":
+        return "maze"
+    elif game == "cave_doors":
+        return "maze"
+    elif game == "cave_portal":
+        return "maze"
+    elif game == "vertical":
+        return "supercat-new"
+    elif game == "slide":
+        return "tomb"
+    elif game == "crates":
+        return None
+    
+def get_cols_rows(game):
+    if game == "platform":
+        return 16,32
+    elif game == "cave":
+        return 16,32
+    elif game == "cave_doors":
+        return 16,16
+    elif game == "cave_portal":
+        return 16,16
+    elif game == "vertical":
+        return 20,16
+    elif game == "slide":
+        return 32,26
+    elif game == "crates":
+        return 16,16
+    
+def get_z_dims(game):
+    if game == "platform":
+        chars =platform_chars_unique
+    elif game == "cave":
+        chars = cave_chars_unique
+    elif game == "cave_doors":
+        chars = cave_doors_chars_unique
+    elif game == "cave_portal":
+        chars = cave_portals_chars_unique
+    elif game == "vertical":
+        chars = vertical_chars_unique
+    elif game == "slide":
+        chars = slide_chars_unique
+    elif game == "crates":
+        chars = sokoban_chars_unique
+    return len(chars)
