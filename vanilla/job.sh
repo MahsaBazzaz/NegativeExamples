@@ -23,4 +23,4 @@ instance=$4
 
 command="python train.py --s $from --f $to --game $game --instance $instance --experiment ../../../../scratch/bazzaz.ma/NegativeExample/models --cuda"
 echo $command
-$commands
+$command
