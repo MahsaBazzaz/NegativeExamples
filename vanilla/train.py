@@ -110,8 +110,8 @@ netD.apply(weights_init)
 if opt.s > 0:
     print("load previous model")
     epochs = opt.f - opt.s
-    previous_d = f'/{opt.game}/{opt.s}/{opt.instance}/*VD_{opt.condition}.pth'
-    previous_g = f'/{opt.game}/{opt.s}/{opt.instance}/*VG_{opt.condition}.pth'
+    previous_d = f'./{opt.experiment}/{opt.game}/{opt.s}/{opt.instance}/*VD_{opt.condition}.pth'
+    previous_g = f'./{opt.experiment}/{opt.game}/{opt.s}/{opt.instance}/*VG_{opt.condition}.pth'
     matching_files_d = find_matching_file(previous_d)
     if len(matching_files_d) > 0:
         matching_files_d = matching_files_d[0]
@@ -125,7 +125,7 @@ if opt.s > 0:
 else:
     epochs = opt.f
 
-main_dir = f"{opt.game}/{opt.f}/{opt.instance}"
+main_dir = f"./{opt.experiment}/{opt.game}/{opt.f}/{opt.instance}"
 if not os.path.exists(main_dir):
     try:
         os.makedirs(main_dir)

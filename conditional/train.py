@@ -147,7 +147,7 @@ if opt.s > 0:
 else:
     epochs = opt.f
 
-main_dir = f"{opt.experiment}/{opt.game}/{opt.f}/{opt.instance}"
+main_dir = f"./{opt.experiment}/{opt.game}/{opt.f}/{opt.instance}"
 if not os.path.exists(main_dir):
     try:
         os.makedirs(main_dir)
