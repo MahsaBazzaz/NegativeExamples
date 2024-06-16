@@ -20,6 +20,7 @@ if __name__ == '__main__':
     parser.add_argument('--epochs', type=str, default=400)
     parser.add_argument('--game', type=str, default='mario')
     parser.add_argument('--instance', type=str)
+    parser.add_argument('--image', type=bool, default=False)
 
     opt = parser.parse_args()
 
@@ -97,9 +98,9 @@ if __name__ == '__main__':
             print("Path does not exist. Level Unplayble.")
             vis_path = directory + "/" + str(i) + ".lvl"
 
-        
-        script_path = './level2image/level2image.py'
-        arguments = [vis_path,
-                    '--fmt', 'png']
-        command = ['python', script_path] + arguments
-        subprocess.run(command, check=True)
+        if opt.image == True:
+            script_path = './level2image/level2image.py'
+            arguments = [vis_path,
+                        '--fmt', 'png']
+            command = ['python', script_path] + arguments
+            subprocess.run(command, check=True)
