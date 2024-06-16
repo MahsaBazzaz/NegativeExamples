@@ -1,11 +1,11 @@
 #!/bin/bash
-# SLURM directives
 #SBATCH --partition=gpu
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=1
-#SBATCH --mem=50G
-#SBATCH --time=3:59:00
-#SBATCH --job-name=myjob
+#SBATCH --gres=gpu:v100-pcie:1
+#SBATCH --time=04:00:00
+#SBATCH --job-name=gpu_c
+#SBATCH --mem=10GB
+#SBATCH --ntasks=1
 #SBATCH --output=log/vanilla/output_%j.txt
 #SBATCH --error=log/vanilla/error_%j.txt
 module load anaconda3/2022.05
