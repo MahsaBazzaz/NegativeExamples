@@ -41,7 +41,7 @@ def get_positive(game):
     current_block = []
 
     # Check if the given path is a valid directory
-    parent_dir_solvable = f"../TheGGLCTexts/{game}/solvable/texts"
+    parent_dir_solvable = f"./TheGGLCTexts/{game}/solvable/texts"
 
     if not os.path.isdir(parent_dir_solvable):
         print(f"Error: {parent_dir_solvable} is not a valid directory.")
@@ -90,7 +90,7 @@ def get_negative(game):
     labels = []
     current_block = []
 
-    parent_dir_unsolvable = f"../TheGGLCTexts/{game}/unsolvable/texts"
+    parent_dir_unsolvable = f"./TheGGLCTexts/{game}/unsolvable/texts"
 
     if not os.path.isdir(parent_dir_unsolvable):
         print(f"Error: {parent_dir_unsolvable} is not a valid directory.")
