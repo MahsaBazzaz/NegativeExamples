@@ -1,10 +1,10 @@
 #!/bin/bash
 # SLURM directives
-#SBATCH --partition=short
+#SBATCH --partition=gpu
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --mem=50G
-#SBATCH --time=11:59:00
+#SBATCH --time=3:59:00
 #SBATCH --job-name=myjob
 #SBATCH --output=log/conditional/output_%j.txt
 #SBATCH --error=log/conditional/error_%j.txt
