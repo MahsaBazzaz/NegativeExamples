@@ -4,3 +4,6 @@
 [submodule "TheGGLCTexts"]
 	path = TheGGLCTexts
 	url = https://github.com/MahsaBazzaz/TheGGLCTexts.git
+[submodule "sturgeon"]
+	path = sturgeon
+	url = https://github.com/crowdgames/sturgeon.git
