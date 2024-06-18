@@ -45,7 +45,6 @@ parser.add_argument('--Diters', type=int, default=5, help='number of D iters per
 parser.add_argument('--n_extra_layers', type=int, default=0, help='Number of extra layers on gen and disc')
 parser.add_argument('--experiment', default='./trained_models', help='Where to store samples and models')
 parser.add_argument('--adam', action='store_true', help='Whether to use adam (default is rmsprop)')
-parser.add_argument('--problem', type=int, default=0, help='Level examples')
 
 # parser.add_argument('--netG', default='', help="path to netG (to continue training)")
 # parser.add_argument('--netD', default='', help="path to netD (to continue training)")
@@ -68,7 +67,13 @@ if torch.cuda.is_available() and not opt.cuda:
     print("WARNING: You have a CUDA device, so you should probably run with --cuda")
 
 
-X, y = get_positive(opt.game)
+X_all, y_all = get_positive(opt.game)
+num_samples = 2000
+# Get the random indices
+indices = np.random.choice(len(X_all), num_samples, replace=False)
+# Select the elements from both arrays
+X = X_all[indices]
+y = y_all[indices]
 
 map_size = 64
 

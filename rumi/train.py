@@ -45,7 +45,6 @@ parser.add_argument('--Diters', type=int, default=5, help='number of D iters per
 parser.add_argument('--n_extra_layers', type=int, default=0, help='Number of extra layers on gen and disc')
 parser.add_argument('--experiment', default='./trained_models', help='Where to store samples and models')
 parser.add_argument('--adam', action='store_true', help='Whether to use adam (default is rmsprop)')
-parser.add_argument('--problem', type=int, default=0, help='Level examples')
 opt = parser.parse_args()
 print(opt)
 
@@ -65,13 +64,13 @@ if torch.cuda.is_available() and not opt.cuda:
 
 map_size = 64
     
-X_pos, _= get_positive(opt.game)
-X_neg, _ = get_negative(opt.game)
-# balance the dataset (remove from bigger class)
-print('balance the dataset (remove from bigger class)')
-X_pos, X_neg = make_arrays_equal_length(X_pos, X_neg)
-print("number of playble levels after balance: ", len(X_pos))
-print("number of unplayble levels after balance: ", len(X_neg))
+X_pos_all, _= get_positive(opt.game)
+X_neg_all, _ = get_negative(opt.game)
+num_samples = 1000
+indices = np.random.choice(len(X_pos_all), num_samples, replace=False)
+X_pos = X_pos_all[indices]
+indices = np.random.choice(len(X_neg_all), num_samples, replace=False)
+X_neg = X_neg_all[indices]
 
 z_dims = X_pos.shape[3] #Numer different title types
 num_batches = X_pos.shape[0] / opt.batchSize

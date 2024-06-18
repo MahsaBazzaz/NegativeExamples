@@ -49,7 +49,6 @@ parser.add_argument('--Diters', type=int, default=5, help='number of D iters per
 parser.add_argument('--n_extra_layers', type=int, default=0, help='Number of extra layers on gen and disc')
 parser.add_argument('--experiment', default='./trained_models', help='Where to store samples and models')
 parser.add_argument('--adam', action='store_true', help='Whether to use adam (default is rmsprop)')
-parser.add_argument('--problem', type=int, default=0, help='Level examples')
 opt = parser.parse_args()
 print(opt)
         
@@ -70,17 +69,16 @@ if torch.cuda.is_available() and not opt.cuda:
  
 map_size = 64
 
-if opt.problem == 0:
-    examplesJson = "example.json"
-else:
-    examplesJson= "sepEx/examplemario{}.json".format(opt.problem)
+X_pos_all, y_pos_all= get_positive(opt.game)
+X_neg_all, y_neg_all = get_negative(opt.game)
 
-X_pos, y_pos= get_positive(opt.game)
-X_neg, y_neg = get_negative(opt.game)
-X = np.concatenate((X_pos, X_neg))
-y = np.concatenate((y_pos, y_neg))
-print(X.shape)
-print(y.shape)
+num_samples = 1000
+indices = np.random.choice(len(X_pos_all), num_samples, replace=False)
+X_pos = X_pos_all[indices]
+y_pos= y_pos_all[indices]
+indices = np.random.choice(len(X_neg_all), num_samples, replace=False)
+X_neg = X_neg_all[indices]
+y_neg= y_neg_all[indices]
 
 z_dims = X_pos.shape[3] #Numer different title types
 
