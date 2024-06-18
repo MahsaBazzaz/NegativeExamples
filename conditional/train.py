@@ -253,10 +253,10 @@ for epoch in range(epochs + 1):
             % (epoch, epochs, i, num_batches, gen_iterations,
             errD.data[0], errG.data[0], errD_real.data[0], errD_fake.data[0]))
 
-    if epoch % 50 == 0:
+    if epoch % 5000 == 0:
         print(f"<><> saved model on epoch {epoch}")
-        torch.save(netG.state_dict(), f'{main_dir}/CG_checkpoint.pth')
-        torch.save(netD.state_dict(), f'{main_dir}/CD_checkpoint.pth')
+        torch.save(netG.state_dict(), f'{main_dir}/CG_checkpoint_{epoch}.pth')
+        torch.save(netD.state_dict(), f'{main_dir}/CD_checkpoint_{epoch}.pth')
         
 torch.save(netG.state_dict(), f'{main_dir}/CG.pth')
 torch.save(netD.state_dict(), f'{main_dir}/CD.pth')
