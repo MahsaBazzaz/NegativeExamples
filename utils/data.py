@@ -65,7 +65,7 @@ def get_positive(game):
                             labels.append(0)
 
     levels = np.eye(num_tiles, dtype='uint8')[levels]
-    return levels, labels
+    return levels, np.array(labels)
 
 def get_negative(game):
     if game == "platform":
@@ -114,7 +114,7 @@ def get_negative(game):
                             labels.append(1)
 
     levels = np.eye(num_tiles, dtype='uint8')[levels]
-    return levels, labels
+    return levels, np.array(labels)
 
 def make_arrays_equal_length(arr1, arr2):
     len1 = len(arr1)
