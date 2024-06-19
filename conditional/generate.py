@@ -15,7 +15,9 @@ from utils.data import find_matching_file, get_reach_move, get_cols_rows, get_z_
 import numpy as np
 
 if __name__ == '__main__':
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cpu")
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--epochs', type=str, default=10000)
     parser.add_argument('--game', type=str, default='mario')
@@ -23,18 +25,19 @@ if __name__ == '__main__':
     parser.add_argument('--directory', type=str, default='./out')
     parser.add_argument('--image', type=bool, default=False)
     parser.add_argument('--solution', type=bool, default=False)
+    parser.add_argument('--batchsize', type=float, default=100)
 
     opt = parser.parse_args()
 
     nz = 32
     
 
-    modelToLoad = f"{opt.directory}/models/{opt.game}/{opt.epochs}/{opt.instance}/CG*.pth"
+    modelToLoad = f"{opt.directory}/models/{opt.game}/{opt.instance}/{opt.epochs}/CG*.pth"
     matching_files = find_matching_file(modelToLoad)
     if len(matching_files)  > 0:
         print(matching_files)
         matching_files = matching_files[0]
-    batch_size = 1000
+    batch_size = opt.batchsize
     #nz = 10 #Dimensionality of latent vector
 
     imageSize = 64
@@ -42,10 +45,8 @@ if __name__ == '__main__':
     ngpu = 1
     n_extra_layers = 0
     z_dims = get_z_dims(opt.game) #number different titles
-    if opt.neg is True:
-        y_dims = 2
-    else:
-        y_dims = 1
+
+    y_dims = 1
 
     generator = cdcgan.DCGAN_G(imageSize, nz + y_dims, z_dims, ngf, ngpu, n_extra_layers)
 
@@ -70,7 +71,7 @@ if __name__ == '__main__':
     level = level[:,:,:cols,:rows]
     level = numpy.argmax( level, axis = 1)
 
-    directory = f"{opt.directory}/artifacts/{opt.game}/{opt.epochs}/{opt.instance}/C"
+    directory = f"{opt.directory}/artifacts/{opt.game}/{opt.instance}/{opt.epochs}/C"
     
     if not os.path.exists(directory):
         os.makedirs(directory)

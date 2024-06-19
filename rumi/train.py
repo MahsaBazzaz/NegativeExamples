@@ -17,6 +17,7 @@ from torch.autograd import Variable
 import numpy as np
 
 import models.dcgan as dcgan
+from utils.file import make_sure_dir_exists
 from utils.data import find_matching_file, get_positive, get_negative, make_arrays_equal_length
 from torch.utils.data import DataLoader, Dataset, TensorDataset
 
@@ -113,8 +114,8 @@ netD.apply(weights_init)
 
 if opt.s > 0:
     epochs = opt.f - opt.s
-    previous_d = f'./{opt.experiment}/{opt.game}/{opt.s}/{opt.instance}/*RD_{opt.condition}.pth'
-    previous_g = f'./{opt.experiment}/{opt.game}/{opt.s}/{opt.instance}/*RG_{opt.condition}.pth'
+    previous_d = f'./{opt.experiment}/{opt.game}/{opt.instance}/{opt.s}/RD*.pth'
+    previous_g = f'./{opt.experiment}/{opt.game}/{opt.instance}/{opt.s}/RG*.pth'
     matching_files_d = find_matching_file(previous_d)
     if len(matching_files_d) > 0:
         matching_files_d = matching_files_d[0]
@@ -128,24 +129,9 @@ if opt.s > 0:
 else:
     epochs = opt.f
 
-main_dir = f"./{opt.experiment}/{opt.game}/{opt.f}/{opt.instance}"
-if not os.path.exists(main_dir):
-    try:
-        os.makedirs(main_dir)
-        print(f"Directory '{main_dir}' created successfully.")
-    except OSError as e:
-        print(f"Error: Failed to create directory '{main_dir}'. {e}")
-else:
-        print(f"Directory '{main_dir}' already exists.")
+main_dir = f"./{opt.experiment}/{opt.game}/{opt.instance}"
+make_sure_dir_exists(f"{main_dir}")
 
-if not os.path.exists(f"{main_dir}/all"):
-    try:
-        os.makedirs(f"{main_dir}/all")
-        print(f"Directory '{main_dir}/all' created successfully.")
-    except OSError as e:
-        print(f"Error: Failed to create directory '{main_dir}/all'. {e}")
-else:
-        print(f"Directory '{main_dir}/all' already exists.")
 
 input_pos = torch.FloatTensor(opt.batchSize, z_dims, map_size, map_size)
 input_neg = torch.FloatTensor(opt.batchSize, z_dims, map_size, map_size)
@@ -283,9 +269,11 @@ for epoch in range(epochs + 1):
             errD.data[0], errG.data[0], errD_real_pos.data[0], errD_real_neg.data[0], errD_fake.data[0]))
 
     # do checkpointing
-    if epoch % 5000 == 0:
-        print(f"<><> saved model on epoch {epoch}")
-        torch.save(netG.state_dict(), f'{main_dir}/RG_checkpoint_{epoch}.pth')
-        torch.save(netD.state_dict(), f'{main_dir}/RD_checkpoint_{epoch}.pth')
+    if epoch % 1000 == 0 and epoch > 0:
+        make_sure_dir_exists(f"{main_dir}/{epoch}")
+        torch.save(netG.state_dict(), f'{main_dir}/{epoch}/RG_checkpoint_{epochs}.pth')
+        torch.save(netD.state_dict(), f'{main_dir}/{epoch}/RD_checkpoint_{epochs}.pth')
+
+make_sure_dir_exists(f"{main_dir}/{opt.f}")
 torch.save(netG.state_dict(), f'{main_dir}/RG.pth')
 torch.save(netD.state_dict(), f'{main_dir}/RD.pth')

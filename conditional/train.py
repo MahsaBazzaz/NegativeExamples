@@ -22,6 +22,7 @@ from torch.utils.data import DataLoader, Dataset, TensorDataset
 
 
 import models.cdcgan as cdcgan
+from utils.file import make_sure_dir_exists
 from utils.data import find_matching_file, get_positive, get_negative
 
 
@@ -80,6 +81,10 @@ indices = np.random.choice(len(X_neg_all), num_samples, replace=False)
 X_neg = X_neg_all[indices]
 y_neg= y_neg_all[indices]
 
+
+X = np.concatenate((X_pos, X_neg))
+y = np.concatenate((y_pos, y_neg))
+
 z_dims = X_pos.shape[3] #Numer different title types
 
 shape = y.shape
@@ -129,8 +134,8 @@ netD.apply(weights_init)
 
 if opt.s > 0:
     epochs = opt.f - opt.s
-    previous_g = f"./{opt.experiment}/{opt.game}/{opt.s}/{opt.instance}/*CG*.pth"
-    previous_d = f"./{opt.experiment}/{opt.game}/{opt.s}/{opt.instance}/*CD*.pth"
+    previous_g = f"./{opt.experiment}/{opt.game}/{opt.instance}/{opt.s}/CG*.pth"
+    previous_d = f"./{opt.experiment}/{opt.game}/{opt.instance}/{opt.s}/CD*.pth"
     
     matching_files_d = find_matching_file(previous_d)
     if len(matching_files_d) > 0:
@@ -145,16 +150,8 @@ if opt.s > 0:
 else:
     epochs = opt.f
 
-main_dir = f"./{opt.experiment}/{opt.game}/{opt.f}/{opt.instance}"
-if not os.path.exists(main_dir):
-    try:
-        os.makedirs(main_dir)
-        print(f"Directory '{main_dir}' created successfully.")
-    except OSError as e:
-        print(f"Error: Failed to create directory '{main_dir}'. {e}")
-else:
-        print(f"Directory '{main_dir}' already exists.")
-
+main_dir = f"./{opt.experiment}/{opt.game}/{opt.instance}"
+make_sure_dir_exists(f"{main_dir}")
 
 input = torch.FloatTensor(opt.batchSize, z_dims, map_size, map_size)
 noise = torch.FloatTensor(opt.batchSize, nz, 1, 1)
@@ -253,10 +250,13 @@ for epoch in range(epochs + 1):
             % (epoch, epochs, i, num_batches, gen_iterations,
             errD.data[0], errG.data[0], errD_real.data[0], errD_fake.data[0]))
 
-    if epoch % 5000 == 0:
+    if epoch % 1000 == 0 and epoch > 0:
+        make_sure_dir_exists(f"{main_dir}/{epoch}")
+
         print(f"<><> saved model on epoch {epoch}")
-        torch.save(netG.state_dict(), f'{main_dir}/CG_checkpoint_{epoch}.pth')
-        torch.save(netD.state_dict(), f'{main_dir}/CD_checkpoint_{epoch}.pth')
-        
-torch.save(netG.state_dict(), f'{main_dir}/CG.pth')
-torch.save(netD.state_dict(), f'{main_dir}/CD.pth')
+        torch.save(netG.state_dict(), f'{main_dir}/{epoch}/CG_checkpoint_{epochs}.pth')
+        torch.save(netD.state_dict(), f'{main_dir}/{epoch}/CD_checkpoint_{epochs}.pth')
+    
+make_sure_dir_exists(f"{main_dir}/{opt.f}")
+torch.save(netG.state_dict(), f'{main_dir}/{opt.f}/CG.pth')
+torch.save(netD.state_dict(), f'{main_dir}/{opt.f}/CD.pth')

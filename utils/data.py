@@ -86,11 +86,54 @@ def get_negative(game):
     char2int = {ch: ii for ii, ch in int2char.items()}
     num_tiles = len(char2int)
 
+    levels0, labels0 = get_unsolvable(game, char2int, num_tiles)
+    if game == "platform":
+        levels1, labels1 = get_unusuable(game, char2int, num_tiles)
+        levels = np.concatenate((levels0, levels1))
+        labels = np.concatenate((labels0, labels1))
+    else:
+        levels = levels0
+        labels = labels0
+
+    return levels, labels
+
+def get_unsolvable(game, char2int, num_tiles):
     levels = []
     labels = []
     current_block = []
 
     parent_dir_unsolvable = f"./TheGGLCTexts/{game}/unsolvable/texts"
+
+    if not os.path.isdir(parent_dir_unsolvable):
+        print(f"Error: {parent_dir_unsolvable} is not a valid directory.")
+        return
+
+    # Iterate through all directories and subdirectories
+    for root, dirs, files in os.walk(parent_dir_unsolvable):
+        # For each file in the current directory
+        for file in files:
+            file_path = os.path.join(root, file)
+            with open(file_path, 'r') as file:
+                for line in file:
+                    line = line.rstrip('\n')
+                    if not line.startswith("META"):
+                        ncoded_line = [char2int[x] for x in line]
+                        current_block.append(ncoded_line)
+                    elif len(current_block) > 0:
+                            current_block = np.array(current_block)
+                            levels.append(current_block)
+                            current_block = []
+                            labels.append(1)
+
+    levels = np.eye(num_tiles, dtype='uint8')[levels]
+    return levels, np.array(labels)
+
+def get_unusuable(game, char2int, num_tiles):
+    levels = []
+    labels = []
+    current_block = []
+
+    parent_dir_unsolvable = f"./TheGGLCTexts/{game}/unusable/texts"
 
     if not os.path.isdir(parent_dir_unsolvable):
         print(f"Error: {parent_dir_unsolvable} is not a valid directory.")

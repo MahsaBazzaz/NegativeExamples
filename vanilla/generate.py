@@ -15,7 +15,8 @@ import argparse
 from utils.data import find_matching_file, get_reach_move, get_cols_rows, get_z_dims
 
 if __name__ == '__main__':
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cpu")
     parser = argparse.ArgumentParser()
     parser.add_argument('--epochs', type=str, default=10000)
     parser.add_argument('--game', type=str)
@@ -23,10 +24,11 @@ if __name__ == '__main__':
     parser.add_argument('--directory', type=str, default='./out')
     parser.add_argument('--image', type=bool, default=False)
     parser.add_argument('--solution', type=bool, default=False)
+    parser.add_argument('--batchsize', type=float, default=100)
 
     opt = parser.parse_args()
 
-    modelToLoad = f"{opt.directory}/models/{opt.game}/{opt.epochs}/{opt.instance}/VG*.pth"
+    modelToLoad = f"{opt.directory}/models/{opt.game}/{opt.instance}/{opt.epochs}/VG*.pth"
     matching_files = find_matching_file(modelToLoad)
     if len(matching_files) == 0:
         print("ERROR: No Trained Models")
@@ -34,7 +36,7 @@ if __name__ == '__main__':
         matching_files = matching_files[0]
         print(f"Found Trained Model: {matching_files}")
     nz = 32
-    batch_size = 1000
+    batch_size = opt.batchsize
     #nz = 10 #Dimensionality of latent vector
     imageSize = 64
     ngf = 64
@@ -44,9 +46,11 @@ if __name__ == '__main__':
 
     generator = dcgan.DCGAN_G(imageSize, nz, z_dims, ngf, ngpu, n_extra_layers)
     generator.load_state_dict(torch.load(matching_files, map_location=lambda storage, loc: storage))
-
     lv = torch.randn(batch_size, 32, 1, 1, device=device)
     latent_vector = torch.FloatTensor( lv ).view(batch_size, nz, 1, 1) 
+
+    # latent_vector = torch.empty((batch_size, nz, 1, 1), dtype=lv.dtype, device=lv.device)
+    # latent_vector = latent_vector.view(batch_size, nz, 1, 1)
 
     levels = generator(Variable(latent_vector, volatile=True))
 
@@ -57,7 +61,7 @@ if __name__ == '__main__':
     level = level[:,:,:cols,:rows]
     level = numpy.argmax( level, axis = 1)
 
-    directory = f"{opt.directory}/artifacts/{opt.game}/{opt.epochs}/{opt.instance}"
+    directory = f"{opt.directory}/artifacts/{opt.game}/{opt.instance}/{opt.epochs}/V"
     
     if not os.path.exists(directory):
         os.makedirs(directory)
