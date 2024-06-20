@@ -25,8 +25,8 @@ print("** Positive min: ", pos_min)
 
 # game:  platform
 # pos:  27000
-# neg:  9000
-# sum:  36000
+# neg:  17000
+# sum:  44000
 # ------------------------------
 # game:  slide
 # pos:  18000

@@ -58,11 +58,10 @@ def get_positive(game):
                     if not line.startswith("META"):
                         ncoded_line = [char2int[x] for x in line]
                         current_block.append(ncoded_line)
-                    elif len(current_block) > 0:
-                            current_block = np.array(current_block)
-                            levels.append(current_block)
-                            current_block = []
-                            labels.append(0)
+                current_block = np.array(current_block)
+                levels.append(current_block)
+                current_block = []
+                labels.append(0)
 
     levels = np.eye(num_tiles, dtype='uint8')[levels]
     return levels, np.array(labels)
@@ -119,11 +118,10 @@ def get_unsolvable(game, char2int, num_tiles):
                     if not line.startswith("META"):
                         ncoded_line = [char2int[x] for x in line]
                         current_block.append(ncoded_line)
-                    elif len(current_block) > 0:
-                            current_block = np.array(current_block)
-                            levels.append(current_block)
-                            current_block = []
-                            labels.append(1)
+                current_block = np.array(current_block)
+                levels.append(current_block)
+                current_block = []
+                labels.append(1)
 
     levels = np.eye(num_tiles, dtype='uint8')[levels]
     return levels, np.array(labels)
@@ -147,15 +145,13 @@ def get_unusuable(game, char2int, num_tiles):
             with open(file_path, 'r') as file:
                 for line in file:
                     line = line.rstrip('\n')
-                    if not line.startswith("META"):
-                        ncoded_line = [char2int[x] for x in line]
-                        current_block.append(ncoded_line)
-                    elif len(current_block) > 0:
-                            current_block = np.array(current_block)
-                            levels.append(current_block)
-                            current_block = []
-                            labels.append(1)
+                    ncoded_line = [char2int[x] for x in line]
+                    current_block.append(ncoded_line)
 
+                current_block = np.array(current_block)
+                levels.append(current_block)
+                current_block = []
+                labels.append(1)
     levels = np.eye(num_tiles, dtype='uint8')[levels]
     return levels, np.array(labels)
 
