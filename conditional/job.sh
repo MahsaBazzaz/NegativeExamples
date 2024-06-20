@@ -2,8 +2,8 @@
 #SBATCH --partition=gpu
 #SBATCH --nodes=1
 #SBATCH --gres=gpu:v100-pcie:1
-#SBATCH --time=04:00:00
-#SBATCH --job-name=gpu_v
+#SBATCH --time=06:00:00
+#SBATCH --job-name=gpu_c
 #SBATCH --mem=10GB
 #SBATCH --ntasks=1
 #SBATCH --output=log/conditional/output_%j.txt
