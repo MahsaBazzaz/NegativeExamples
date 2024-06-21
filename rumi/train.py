@@ -275,5 +275,5 @@ for epoch in range(epochs + 1):
         torch.save(netD.state_dict(), f'{main_dir}/{epoch}/RD_checkpoint_{epochs}.pth')
 
 make_sure_dir_exists(f"{main_dir}/{opt.f}")
-torch.save(netG.state_dict(), f'{main_dir}/RG.pth')
-torch.save(netD.state_dict(), f'{main_dir}/RD.pth')
+torch.save(netG.state_dict(), f'{main_dir}/{opt.f}/RG.pth')
+torch.save(netD.state_dict(), f'{main_dir}/{opt.f}/RD.pth')

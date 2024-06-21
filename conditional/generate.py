@@ -58,10 +58,10 @@ if __name__ == '__main__':
     # labels = torch.zeros(batch_size, 3)
     # labels[:, cond] = 1  # Set the first column to 1
     # labels = torch.ones(batch_size)
-    if opt.neg is True:
-        labels = torch.FloatTensor(np.tile([[1, opt.condition]], (batch_size, 1)))
-    else:
-        labels = torch.full((batch_size,), opt.condition)
+    
+    # labels = torch.FloatTensor(np.tile([[1, 0]], (batch_size, 1)))
+    labels = torch.full((batch_size,), 0)
+
     levels = generator(Variable(latent_vector, volatile=True), Variable(labels))
 
     #levels.data = levels.data[:,:,:14,:28] #Cut of rest to fit the 14x28 tile dimensions
@@ -81,7 +81,7 @@ if __name__ == '__main__':
         
     for i in range(batch_size):
         output = level[i]
-        result = map_output_to_symbols("mario", output)
+        result = map_output_to_symbols(opt.game, output)
         result_string = ""
         for row in result:
             for item in row:
