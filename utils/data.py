@@ -13,6 +13,9 @@ vertical_chars_unique = sorted(list(["-","X", "}", "{"]))
 slide_chars_unique = sorted(list(["-","X", "}", "{", "#"]))
 sokoban_chars_unique = sorted(list(["-","X", "@", "#", "o"]))
 
+mario_chars_unique = sorted(list(["-","X", "}", "{", "<", ">", "[", "]", "Q", "S"]))
+cave_treasures_chars_unique = sorted(list(["-","X", "}", "{", "2"]))
+
 def find_matching_file(pattern):
     matching_files = glob.glob(pattern)
     return matching_files
@@ -65,6 +68,45 @@ def get_positive(game):
 
     levels = np.eye(num_tiles, dtype='uint8')[levels]
     return levels, np.array(labels)
+
+def get_positive_db(game, cond):
+    int2char = dict(enumerate(mario_chars_unique))
+    char2int = {ch: ii for ii, ch in int2char.items()}
+    num_tiles = len(char2int)
+    levels = []
+    current_block = []
+    with open(f"./db/{game}/{game}_{cond}", 'r') as file:
+        for line in file:
+            line_strip = line.rstrip('\n')
+            if all(char in mario_chars_unique for char in line_strip):
+                current_block.append(line.strip())
+            else:
+                if len(current_block) > 0:
+                    levels.append(current_block)
+                    current_block = []
+
+    num_samples = 2900
+    indices = np.random.choice(len(levels), num_samples, replace=False)
+    return np.array(levels[indices])
+
+def get_negative_db(game, cond):
+    int2char = dict(enumerate(mario_chars_unique))
+    char2int = {ch: ii for ii, ch in int2char.items()}
+    num_tiles = len(char2int)
+    levels = []
+    current_block = []
+    with open(f"./db/{game}/{game}_{cond}_unplayble", 'r') as file:
+        for line in file:
+            line_strip = line.rstrip('\n')
+            if not line.startswith("META"):
+                current_block.append(line.strip())
+            else:
+                if len(current_block) > 0:
+                    levels.append(current_block)
+                    current_block = []
+    num_samples = 2900
+    indices = np.random.choice(len(levels), num_samples, replace=False)
+    return np.array(levels[indices])
 
 def get_negative(game):
     if game == "platform":
@@ -215,6 +257,10 @@ def get_cols_rows(game):
         return 32,16
     elif game == "crates":
         return 8,8
+    elif game == "cave_treasures":
+        return 14,14
+    elif game == "mario":
+        return 14,32
     
 def get_z_dims(game):
     if game == "platform":
@@ -231,4 +277,8 @@ def get_z_dims(game):
         chars = slide_chars_unique
     elif game == "crates":
         chars = sokoban_chars_unique
+    elif game == "cave_treasures":
+        chars = cave_treasures_chars_unique
+    elif game == "mario":
+        chars = mario_chars_unique
     return len(chars)
