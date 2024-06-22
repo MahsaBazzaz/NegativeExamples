@@ -25,7 +25,7 @@ if __name__ == '__main__':
     parser.add_argument('--directory', type=str, default='./out')
     parser.add_argument('--image', type=bool, default=False)
     parser.add_argument('--solution', type=bool, default=False)
-    parser.add_argument('--batchsize', type=float, default=100)
+    parser.add_argument('--batchsize', type=int, default=100)
 
     opt = parser.parse_args()
 
