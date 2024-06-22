@@ -212,9 +212,9 @@ def get_cols_rows(game):
     elif game == "vertical":
         return 20,16
     elif game == "slide":
-        return 32,26
+        return 32,16
     elif game == "crates":
-        return 16,16
+        return 8,8
     
 def get_z_dims(game):
     if game == "platform":

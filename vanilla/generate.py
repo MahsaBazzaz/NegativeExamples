@@ -46,7 +46,7 @@ if __name__ == '__main__':
 
     generator = dcgan.DCGAN_G(imageSize, nz, z_dims, ngf, ngpu, n_extra_layers)
     generator.load_state_dict(torch.load(matching_files, map_location=lambda storage, loc: storage))
-    lv = torch.randn(batch_size, 32, 1, 1, device=device)
+    lv = torch.randn(batch_size, nz, 1, 1, device=device)
     latent_vector = torch.FloatTensor( lv ).view(batch_size, nz, 1, 1) 
 
     # latent_vector = torch.empty((batch_size, nz, 1, 1), dtype=lv.dtype, device=lv.device)

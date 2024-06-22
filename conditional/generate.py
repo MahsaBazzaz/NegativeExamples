@@ -52,7 +52,7 @@ if __name__ == '__main__':
 
     generator.load_state_dict(torch.load(matching_files, map_location=lambda storage, loc: storage))
 
-    lv = torch.randn(batch_size, 32, 1, 1, device=device)
+    lv = torch.randn(batch_size, nz, 1, 1, device=device)
     latent_vector = torch.FloatTensor( lv ).view(batch_size, nz, 1, 1) 
 
     # labels = torch.zeros(batch_size, 3)
