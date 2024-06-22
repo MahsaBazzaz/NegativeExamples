@@ -96,7 +96,7 @@ if __name__ == '__main__':
             try:
                 reach_move = get_reach_move(opt.game)
                 script_path = './sturgeon/level2repath.py'
-                arguments = ['--outfile', directory + "/" + str(i) + ".path.lvl",'--textfile', directory + "/" + str(i) + ".lvl",'--reach-move', reach_move]
+                arguments = ['--outfile', directory + "/" + str(i) + ".path.lvl",'--textfile', directory + "/" + str(i) + ".lvl",'--reach-connect', "--src { --dst } --move " + reach_move]
                 command = ['python', script_path] + arguments
                 print(command)
                 result = subprocess.run(command, check=True)
