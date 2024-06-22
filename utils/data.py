@@ -70,43 +70,62 @@ def get_positive(game):
     return levels, np.array(labels)
 
 def get_positive_db(game, cond):
-    int2char = dict(enumerate(mario_chars_unique))
+    if game == "mario":
+        chars_unique = mario_chars_unique
+    elif game == "cave_treasures":
+        chars_unique = cave_treasures_chars_unique
+    
+    int2char = dict(enumerate(chars_unique))
     char2int = {ch: ii for ii, ch in int2char.items()}
     num_tiles = len(char2int)
     levels = []
     current_block = []
     with open(f"./db/{game}/{game}_{cond}", 'r') as file:
         for line in file:
-            line_strip = line.rstrip('\n')
-            if all(char in mario_chars_unique for char in line_strip):
-                current_block.append(line.strip())
+            line = line.rstrip('\n')
+            if not line.startswith("META") and all(char in chars_unique for char in line):
+                ncoded_line = [char2int[x] for x in line]
+                current_block.append(ncoded_line)
             else:
                 if len(current_block) > 0:
                     levels.append(current_block)
                     current_block = []
 
-    num_samples = 2900
+    levels = np.array(levels)
+    num_samples = min(2900 , len(levels))
     indices = np.random.choice(len(levels), num_samples, replace=False)
-    return np.array(levels[indices])
+    levels = np.array(levels[indices])
+    levels = np.eye(num_tiles, dtype='uint8')[levels]
+    return levels
 
 def get_negative_db(game, cond):
-    int2char = dict(enumerate(mario_chars_unique))
+    if game == "mario":
+        chars_unique = mario_chars_unique
+    elif game == "cave_treasures":
+        chars_unique = cave_treasures_chars_unique
+    
+    int2char = dict(enumerate(chars_unique))
     char2int = {ch: ii for ii, ch in int2char.items()}
     num_tiles = len(char2int)
     levels = []
     current_block = []
     with open(f"./db/{game}/{game}_{cond}_unplayble", 'r') as file:
         for line in file:
-            line_strip = line.rstrip('\n')
-            if not line.startswith("META"):
-                current_block.append(line.strip())
+            line = line.rstrip('\n')
+            if not line.startswith("META") and all(char in chars_unique for char in line):
+                ncoded_line = [char2int[x] for x in line]
+                current_block.append(ncoded_line)
             else:
                 if len(current_block) > 0:
                     levels.append(current_block)
                     current_block = []
-    num_samples = 2900
+
+    levels = np.array(levels)
+    num_samples = min(2900 , len(levels))
     indices = np.random.choice(len(levels), num_samples, replace=False)
-    return np.array(levels[indices])
+    levels = np.array(levels[indices])
+    levels = np.eye(num_tiles, dtype='uint8')[levels]
+    return levels
 
 def get_negative(game):
     if game == "platform":

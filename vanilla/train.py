@@ -18,7 +18,7 @@ import numpy as np
 
 import models.dcgan as dcgan
 from utils.file import make_sure_dir_exists
-from utils.data import find_matching_file, get_positive
+from utils.data import find_matching_file, get_positive, get_positive_db
 from torch.utils.data import DataLoader, Dataset, TensorDataset
 
 
@@ -67,14 +67,19 @@ print(f"device = {device}")
 if torch.cuda.is_available() and not opt.cuda:
     print("WARNING: You have a CUDA device, so you should probably run with --cuda")
 
-
-X_all, y_all = get_positive(opt.game)
-num_samples = 2000
-# Get the random indices
-indices = np.random.choice(len(X_all), num_samples, replace=False)
-# Select the elements from both arrays
-X = X_all[indices]
-y = y_all[indices]
+if opt.game == "mario" or opt.game == "cave_treasures":
+    X_1 = get_positive_db(opt.game, 1)
+    X_2 = get_positive_db(opt.game, 1)
+    X_3 = get_positive_db(opt.game, 1)
+    X = np.concatenate((X_1, X_2, X_3))
+else:
+    X_all, y_all = get_positive(opt.game)
+    num_samples = 2000
+    # Get the random indices
+    indices = np.random.choice(len(X_all), num_samples, replace=False)
+    # Select the elements from both arrays
+    X = X_all[indices]
+    y = y_all[indices]
 
 map_size = 64
 

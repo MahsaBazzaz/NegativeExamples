@@ -18,7 +18,7 @@ import numpy as np
 
 import models.dcgan as dcgan
 from utils.file import make_sure_dir_exists
-from utils.data import find_matching_file, get_positive, get_negative, make_arrays_equal_length
+from utils.data import find_matching_file, get_positive, get_negative, get_positive_db, get_negative_db
 from torch.utils.data import DataLoader, Dataset, TensorDataset
 
 parser = argparse.ArgumentParser()
@@ -64,14 +64,25 @@ if torch.cuda.is_available() and not opt.cuda:
     print("WARNING: You have a CUDA device, so you should probably run with --cuda")
 
 map_size = 64
-    
-X_pos_all, _= get_positive(opt.game)
-X_neg_all, _ = get_negative(opt.game)
-num_samples = 1000
-indices = np.random.choice(len(X_pos_all), num_samples, replace=False)
-X_pos = X_pos_all[indices]
-indices = np.random.choice(len(X_neg_all), num_samples, replace=False)
-X_neg = X_neg_all[indices]
+if opt.game == "mario" or opt.game == "cave_treasures":
+    X_pos_1 = get_positive_db(opt.game, 1)
+    X_pos_2 = get_positive_db(opt.game, 2)
+    X_pos_3 = get_positive_db(opt.game, 3)
+
+    X_neg_1 = get_negative_db(opt.game, 1)
+    X_neg_2 = get_negative_db(opt.game, 2)
+    X_neg_3 = get_negative_db(opt.game, 3)
+
+    X_pos = np.concatenate((X_pos_1, X_pos_2, X_pos_3))
+    X_neg = np.concatenate((X_neg_1, X_neg_2, X_neg_3))
+else:
+    X_pos_all, _= get_positive(opt.game)
+    X_neg_all, _ = get_negative(opt.game)
+    num_samples = 1000
+    indices = np.random.choice(len(X_pos_all), num_samples, replace=False)
+    X_pos = X_pos_all[indices]
+    indices = np.random.choice(len(X_neg_all), num_samples, replace=False)
+    X_neg = X_neg_all[indices]
 
 z_dims = X_pos.shape[3] #Numer different title types
 num_batches = X_pos.shape[0] / opt.batchSize

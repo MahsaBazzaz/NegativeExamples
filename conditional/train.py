@@ -17,13 +17,12 @@ from torch.autograd import Variable
 import os
 import numpy as np
 
-from tqdm import tqdm
 from torch.utils.data import DataLoader, Dataset, TensorDataset
 
 
 import models.cdcgan as cdcgan
 from utils.file import make_sure_dir_exists
-from utils.data import find_matching_file, get_positive, get_negative
+from utils.data import find_matching_file, get_positive, get_negative, get_positive_db, get_negative_db
 
 
 parser = argparse.ArgumentParser()
@@ -69,17 +68,40 @@ if torch.cuda.is_available() and not opt.cuda:
     print("WARNING: You have a CUDA device, so you should probably run with --cuda")
  
 map_size = 64
+if opt.game == "mario" or opt.game == "cave_treasures":
+    X_pos_1 = get_positive_db(opt.game, 1)
+    X_pos_2 = get_positive_db(opt.game, 2)
+    X_pos_3 = get_positive_db(opt.game, 3)
 
-X_pos_all, y_pos_all= get_positive(opt.game)
-X_neg_all, y_neg_all = get_negative(opt.game)
+    y_pos_1 = np.full(len(X_pos_1), 1)
+    y_pos_2 = np.full(len(X_pos_2), 2)
+    y_pos_3 = np.full(len(X_pos_3), 3)
 
-num_samples = 1000
-indices = np.random.choice(len(X_pos_all), num_samples, replace=False)
-X_pos = X_pos_all[indices]
-y_pos= y_pos_all[indices]
-indices = np.random.choice(len(X_neg_all), num_samples, replace=False)
-X_neg = X_neg_all[indices]
-y_neg= y_neg_all[indices]
+    X_pos = np.concatenate((X_pos_1, X_pos_2, X_pos_3))
+    y_pos = np.concatenate((y_pos_1, y_pos_2, y_pos_3))
+
+    X_neg_1 = get_negative_db(opt.game, 1)
+    X_neg_2 = get_negative_db(opt.game, 2)
+    X_neg_3 = get_negative_db(opt.game, 3)
+
+    y_neg_1 = np.full(len(X_neg_1), 1)
+    y_neg_2 = np.full(len(X_neg_2), 2)
+    y_neg_3 = np.full(len(X_neg_3), 3)
+
+    X_neg = np.concatenate((X_neg_1, X_neg_2, X_neg_3))
+    y_neg = np.concatenate((y_neg_1, y_neg_2, y_neg_3))
+
+else:
+    X_pos_all, y_pos_all= get_positive(opt.game)
+    X_neg_all, y_neg_all = get_negative(opt.game)
+
+    num_samples = 1000
+    indices = np.random.choice(len(X_pos_all), num_samples, replace=False)
+    X_pos = X_pos_all[indices]
+    y_pos= y_pos_all[indices]
+    indices = np.random.choice(len(X_neg_all), num_samples, replace=False)
+    X_neg = X_neg_all[indices]
+    y_neg= y_neg_all[indices]
 
 
 X = np.concatenate((X_pos, X_neg))
