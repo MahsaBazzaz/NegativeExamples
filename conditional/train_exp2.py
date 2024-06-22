@@ -14,17 +14,21 @@ import torchvision.datasets as dset
 import torchvision.transforms as transforms
 import torchvision.utils as vutils
 from torch.autograd import Variable
+import os
 import numpy as np
 
-import models.dcgan as dcgan
-from utils.file import make_sure_dir_exists
-from utils.data import find_matching_file, get_positive, get_positive_db
 from torch.utils.data import DataLoader, Dataset, TensorDataset
+
+
+import models.cdcgan as cdcgan
+from utils.file import make_sure_dir_exists
+from utils.data import find_matching_file, get_positive, get_negative, get_positive_db, get_negative_db
 
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--game', type=str, default='mario')
 parser.add_argument('--instance', type=str)
+parser.add_argument('--cond', type=int, default=1)
 parser.add_argument('--s', type=int)
 parser.add_argument('--f', type=int)
 
@@ -32,13 +36,13 @@ parser.add_argument('--nz', type=int, default=32, help='size of the latent z vec
 parser.add_argument('--ngf', type=int, default=64)
 parser.add_argument('--ndf', type=int, default=64)
 parser.add_argument('--batchSize', type=int, default=32, help='input batch size')
-# parser.add_argument('--niter', type=int, default=500, help='number of epochs to train for')
 parser.add_argument('--lrD', type=float, default=0.00005, help='learning rate for Critic, default=0.00005')
 parser.add_argument('--lrG', type=float, default=0.00005, help='learning rate for Generator, default=0.00005')
 parser.add_argument('--beta1', type=float, default=0.5, help='beta1 for adam. default=0.5')
 parser.add_argument('--cuda'  , action='store_true', help='enables cuda')
 parser.add_argument('--ngpu'  , type=int, default=1, help='number of GPUs to use')
-
+parser.add_argument('--netG', default='', help="path to netG (to continue training)")
+parser.add_argument('--netD', default='', help="path to netD (to continue training)")
 parser.add_argument('--clamp_lower', type=float, default=-0.01)
 parser.add_argument('--clamp_upper', type=float, default=0.01)
 parser.add_argument('--Diters', type=int, default=5, help='number of D iters per each G iter')
@@ -46,11 +50,9 @@ parser.add_argument('--Diters', type=int, default=5, help='number of D iters per
 parser.add_argument('--n_extra_layers', type=int, default=0, help='Number of extra layers on gen and disc')
 parser.add_argument('--experiment', default='./trained_models', help='Where to store samples and models')
 parser.add_argument('--adam', action='store_true', help='Whether to use adam (default is rmsprop)')
-
-# parser.add_argument('--netG', default='', help="path to netG (to continue training)")
-# parser.add_argument('--netD', default='', help="path to netD (to continue training)")
 opt = parser.parse_args()
 print(opt)
+        
 
 opt.manualSeed = random.randint(1, 10000) # fix seed
 print("Random Seed: ", opt.manualSeed)
@@ -63,31 +65,64 @@ print("CUDA available: ", torch.cuda.is_available())
 print("CUDA device count: ", torch.cuda.device_count())
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"device = {device}")
-
 if torch.cuda.is_available() and not opt.cuda:
     print("WARNING: You have a CUDA device, so you should probably run with --cuda")
-
-if opt.game == "mario" or opt.game == "cave_treasures":
-    X_1 = get_positive_db(opt.game, 1)
-    X_2 = get_positive_db(opt.game, 1)
-    X_3 = get_positive_db(opt.game, 1)
-    X = np.concatenate((X_1, X_2, X_3))
-else:
-    X_all, y_all = get_positive(opt.game)
-    num_samples = 2000
-    # Get the random indices
-    indices = np.random.choice(len(X_all), num_samples, replace=False)
-    # Select the elements from both arrays
-    X = X_all[indices]
-    y = y_all[indices]
-
+ 
 map_size = 64
+if opt.game == "mario" or opt.game == "cave_treasures":
+    if opt.cond == 1:
+        X_pos = get_positive_db(opt.game, 1)
+        y_pos = np.full(len(X_pos), 1)
 
-z_dims = X.shape[3] #Numer different title types
+        X_neg_0 = get_positive_db(opt.game, 2)
+        X_neg_4 = get_positive_db(opt.game, 3)
 
-num_batches = X.shape[0] / opt.batchSize
+    elif opt.cond == 2:
+        X_pos = get_positive_db(opt.game, 2)
+        y_pos = np.full(len(X_pos), 2)
+
+
+        X_neg_0 = get_positive_db(opt.game, 1)
+        X_neg_4 = get_positive_db(opt.game, 3)
+    elif opt.cond == 3:
+        X_pos = get_positive_db(opt.game, 3)
+        y_pos = np.full(len(X_pos), 3)
+
+        X_neg_0 = get_positive_db(opt.game, 1)
+        X_neg_4 = get_positive_db(opt.game, 2)
+
+    X_neg_1 = get_negative_db(opt.game, 1)
+    X_neg_2 = get_negative_db(opt.game, 2)
+    X_neg_3 = get_negative_db(opt.game, 3)
+
+    y_neg_1 = np.full(len(X_neg_1), 1)
+    y_neg_2 = np.full(len(X_neg_2), 2)
+    y_neg_3 = np.full(len(X_neg_3), 3)
+    y_neg_0 = np.full(len(X_neg_0), 1)
+    y_neg_4 = np.full(len(X_neg_4), 1)
+
+    X_neg = np.concatenate((X_neg_0, X_neg_1, X_neg_2, X_neg_3, X_neg_4))
+    y_neg = np.concatenate((y_neg_0, y_neg_1, y_neg_2, y_neg_3, y_neg_4))
+
+X = np.concatenate((X_pos, X_neg))
+y = np.concatenate((y_pos, y_neg))
+
+z_dims = X_pos.shape[3] #Numer different title types
+
+shape = y.shape
+if len(shape) == 1:
+    print("Shape is (x,)")
+    y_dims = 1
+elif len(shape) == 2 and shape[1] == 2:
+    print("Shape is (x,2)")
+    y_dims = 2
+else:
+    print("Shape is not (x,) or (x,2)")
+
+print ("SHAPE ",X.shape) 
 
 X_onehot = np.rollaxis(X, 3, 1)
+print ("SHAPE ",X_onehot.shape)    #(173, 14, 28, 16)
 
 X_train = np.zeros ( (X.shape[0], z_dims, map_size, map_size) )*2
 
@@ -95,6 +130,7 @@ X_train[:, 2, :, :] = 1.0  #Fill with empty space
 
 #Pad part of level so its a square
 X_train[:X.shape[0], :, :X.shape[1], :X.shape[2]] = X_onehot
+y_train = y
 
 ngpu = int(opt.ngpu)
 nz = int(opt.nz)
@@ -112,17 +148,17 @@ def weights_init(m):
         m.weight.data.normal_(1.0, 0.02)
         m.bias.data.fill_(0)
 
-netG = dcgan.DCGAN_G(map_size, nz, z_dims, ngf, ngpu, n_extra_layers)
+netG = cdcgan.DCGAN_G(map_size, nz + y_dims, z_dims, ngf, ngpu, n_extra_layers)
 netG.apply(weights_init)
 
-netD = dcgan.DCGAN_D(map_size, nz, z_dims, ndf, ngpu, n_extra_layers)
+netD = cdcgan.DCGAN_D(map_size, nz, z_dims + y_dims, ndf, ngpu, n_extra_layers)
 netD.apply(weights_init)
 
 if opt.s > 0:
-    print("load previous model")
     epochs = opt.f - opt.s
-    previous_d = f'./{opt.experiment}/{opt.game}/{opt.instance}/{opt.s}/VD*.pth'
-    previous_g = f'./{opt.experiment}/{opt.game}/{opt.instance}/{opt.s}/VG*.pth'
+    previous_g = f"./{opt.experiment}/{opt.game}/{opt.instance}/{opt.s}/CG*.pth"
+    previous_d = f"./{opt.experiment}/{opt.game}/{opt.instance}/{opt.s}/CD*.pth"
+    
     matching_files_d = find_matching_file(previous_d)
     if len(matching_files_d) > 0:
         matching_files_d = matching_files_d[0]
@@ -162,18 +198,14 @@ else:
     optimizerG = optim.RMSprop(netG.parameters(), lr = opt.lrG)
 
 X_train = torch.FloatTensor(X_train)
-train_dataset = TensorDataset(X_train)
+y_train = torch.FloatTensor(y_train)
+train_dataset = TensorDataset(X_train, y_train)
 dataloader = DataLoader(train_dataset, batch_size=opt.batchSize, shuffle=True, drop_last=True)
 num_batches = len(dataloader)
 gen_iterations = 0
 for epoch in range(epochs + 1):
-    
-    #! data_iter = iter(dataloader)
-
-    X_train = X_train[torch.randperm( len(X_train) )]
-
     i = 0
-    while i < num_batches:#len(dataloader):
+    while i < num_batches:
         ############################
         # (1) Update D network
         ###########################
@@ -185,38 +217,38 @@ for epoch in range(epochs + 1):
             Diters = 100
         else:
             Diters = opt.Diters
+
         j = 0
-        while j < Diters and i < num_batches:#len(dataloader):
+        while j < Diters and i < num_batches:
             j += 1
 
-            # clamp parameters to a cube
             for p in netD.parameters():
                 p.data.clamp_(opt.clamp_lower, opt.clamp_upper)
 
-            # data = X_train[i*opt.batchSize:(i+1)*opt.batchSize]
-            data = next(iter(dataloader))
+            data, label = next(iter(dataloader))
             i += 1
 
-            real_cpu = torch.FloatTensor(data[0])
+            real_cpu = data
+            real_label = label
 
             netD.zero_grad()
-            #batch_size = num_samples #real_cpu.size(0)
 
             if opt.cuda and torch.cuda.is_available():
                 real_cpu = real_cpu.cuda()
+                real_label = real_label.cuda()
 
             input.resize_as_(real_cpu).copy_(real_cpu)
             inputv = Variable(input)
-
-            errD_real = netD(inputv)
+            labelv = Variable(real_label)
+            errD_real = netD(inputv, labelv)
             errD_real.backward(one)
 
             # train with fake
             noise.resize_(opt.batchSize, nz, 1, 1).normal_(0, 1)
-            noisev = Variable(noise) # totally freeze netG
-            fake = Variable(netG(noisev).data)
+            noisev = Variable(noise, volatile = True) # totally freeze netG
+            fake = Variable(netG(noisev, labelv).data)
             inputv = fake
-            errD_fake = netD(inputv)
+            errD_fake = netD(inputv, labelv)
             errD_fake.backward(mone)
             errD = errD_real - errD_fake
             optimizerD.step()
@@ -227,12 +259,11 @@ for epoch in range(epochs + 1):
         for p in netD.parameters():
             p.requires_grad = False # to avoid computation
         netG.zero_grad()
-        # in case our last batch was the tail batch of the dataloader,
-        # make sure we feed a full batch of noise
+
         noise.resize_(opt.batchSize, nz, 1, 1).normal_(0, 1)
         noisev = Variable(noise)
-        fake = netG(noisev)
-        errG = netD(fake)
+        fake = netG(noisev, labelv)
+        errG = netD(fake, labelv)
         errG.backward(one)
         optimizerG.step()
         gen_iterations += 1
@@ -241,12 +272,13 @@ for epoch in range(epochs + 1):
             % (epoch, epochs, i, num_batches, gen_iterations,
             errD.data[0], errG.data[0], errD_real.data[0], errD_fake.data[0]))
 
-    # do checkpointing
-    if epoch % 1000 == 0  and epoch > 0:
+    if epoch % 1000 == 0 and epoch > 0:
         make_sure_dir_exists(f"{main_dir}/{epoch}")
-        torch.save(netG.state_dict(), f'{main_dir}/{epoch}/VG_checkpoint_{epochs}.pth')
-        torch.save(netD.state_dict(), f'{main_dir}/{epoch}/VD_checkpoint_{epochs}.pth')
 
+        print(f"<><> saved model on epoch {epoch}")
+        torch.save(netG.state_dict(), f'{main_dir}/{epoch}/CG_checkpoint_{epochs}.pth')
+        torch.save(netD.state_dict(), f'{main_dir}/{epoch}/CD_checkpoint_{epochs}.pth')
+    
 make_sure_dir_exists(f"{main_dir}/{opt.f}")
-torch.save(netG.state_dict(), f'{main_dir}/{opt.f}/VG.pth')
-torch.save(netD.state_dict(), f'{main_dir}/{opt.f}/VD.pth')
+torch.save(netG.state_dict(), f'{main_dir}/{opt.f}/CG.pth')
+torch.save(netD.state_dict(), f'{main_dir}/{opt.f}/CD.pth')

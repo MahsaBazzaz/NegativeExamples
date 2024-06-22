@@ -11,16 +11,17 @@
 module load anaconda3/2022.05
 module load python/3.8.1
 pip install -r requirements.txt
-if [ $# -lt 4 ]; then
-    echo "Usage: $0 <game> <from> <to> <instance>"
+if [ $# -lt 5 ]; then
+    echo "Usage: $0 <instance> <from> <to> <game> <cond>"
     exit 1
 fi
 # Assign mandatory arguments to variables
-game=$1
+instance=$1
 from=$2
 to=$3
-instance=$4
+game=$4
+cond=$5
 
-command="python ./conditional/train.py --s $from --f $to --game $game --instance $instance --experiment ../../../scratch/bazzaz.ma/NegativeExample/models --cuda"
+command="python ./conditional/train_exp2.py --s $from --f $to --game $game --instance $instance --cond $cond --experiment ../../../scratch/bazzaz.ma/NegativeExample/models --cuda"
 echo $command
 $command
