@@ -243,6 +243,10 @@ def map_output_to_symbols(game, integers):
         int2char = dict(enumerate(slide_chars_unique))
     elif game == "crates":
         int2char = dict(enumerate(sokoban_chars_unique))
+    elif game == "mario":
+        int2char = dict(enumerate(mario_chars_unique))
+    elif game == "cave_treasures":
+        int2char = dict(enumerate(cave_treasures_chars_unique))
     return [[int2char[i.item()] for i in row] for row in integers]
 
 def get_reach_move(game):
