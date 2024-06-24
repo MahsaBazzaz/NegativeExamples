@@ -272,7 +272,7 @@ for epoch in range(epochs + 1):
             % (epoch, epochs, i, num_batches, gen_iterations,
             errD.data[0], errG.data[0], errD_real.data[0], errD_fake.data[0]))
 
-    if epoch % 1000 == 0 and epoch > 0:
+    if epoch % 500 == 0 and epoch > 0:
         make_sure_dir_exists(f"{main_dir}/{epoch}")
 
         print(f"<><> saved model on epoch {epoch}")

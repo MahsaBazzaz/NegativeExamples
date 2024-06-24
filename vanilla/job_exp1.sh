@@ -21,6 +21,6 @@ from=$2
 to=$3
 game=$4
 
-command="python ./vanilla/train_exp1.py --s $from --f $to --game $game --instance $instance --experiment ../../../scratch/bazzaz.ma/NegativeExample/models --cuda"
+command="python ./vanilla/train_exp1.py --s $from --f $to --game $game --instance $instance --experiment ../../../scratch/bazzaz.ma/NegativeExample/models/exp1 --cuda"
 echo $command
 $command

@@ -23,6 +23,6 @@ game=$4
 cond=$5
 
 
-command="python ./vanilla/train_exp2.py --s $from --f $to --game $game --instance $instance --cond $cond --experiment ../../../scratch/bazzaz.ma/NegativeExample/models --cuda"
+command="python ./vanilla/train_exp2.py --s $from --f $to --game $game --instance $instance --cond $cond --experiment ../../../scratch/bazzaz.ma/NegativeExample/models/exp2 --cuda"
 echo $command
 $command
