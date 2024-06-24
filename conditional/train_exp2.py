@@ -276,9 +276,9 @@ for epoch in range(epochs + 1):
         make_sure_dir_exists(f"{main_dir}/{epoch}")
 
         print(f"<><> saved model on epoch {epoch}")
-        torch.save(netG.state_dict(), f'{main_dir}/{epoch}/CG_checkpoint_{epochs}.pth')
-        torch.save(netD.state_dict(), f'{main_dir}/{epoch}/CD_checkpoint_{epochs}.pth')
+        torch.save(netG.state_dict(), f'{main_dir}/{epoch}/CG_{opt.cond}_checkpoint_{epochs}.pth')
+        torch.save(netD.state_dict(), f'{main_dir}/{epoch}/CD_{opt.cond}_checkpoint_{epochs}.pth')
     
 make_sure_dir_exists(f"{main_dir}/{opt.f}")
-torch.save(netG.state_dict(), f'{main_dir}/{opt.f}/CG.pth')
-torch.save(netD.state_dict(), f'{main_dir}/{opt.f}/CD.pth')
+torch.save(netG.state_dict(), f'{main_dir}/{opt.f}/CG_{opt.cond}.pth')
+torch.save(netD.state_dict(), f'{main_dir}/{opt.f}/CD_{opt.cond}.pth')

@@ -284,9 +284,9 @@ for epoch in range(epochs + 1):
     # do checkpointing
     if epoch % 500 == 0 and epoch > 0:
         make_sure_dir_exists(f"{main_dir}/{epoch}")
-        torch.save(netG.state_dict(), f'{main_dir}/{epoch}/RG_checkpoint_{epochs}.pth')
-        torch.save(netD.state_dict(), f'{main_dir}/{epoch}/RD_checkpoint_{epochs}.pth')
+        torch.save(netG.state_dict(), f'{main_dir}/{epoch}/RG_{opt.cond}_checkpoint_{epochs}.pth')
+        torch.save(netD.state_dict(), f'{main_dir}/{epoch}/RD_{opt.cond}_checkpoint_{epochs}.pth')
 
 make_sure_dir_exists(f"{main_dir}/{opt.f}")
-torch.save(netG.state_dict(), f'{main_dir}/{opt.f}/RG.pth')
-torch.save(netD.state_dict(), f'{main_dir}/{opt.f}/RD.pth')
+torch.save(netG.state_dict(), f'{main_dir}/{opt.f}/RG_{opt.cond}.pth')
+torch.save(netD.state_dict(), f'{main_dir}/{opt.f}/RD_{opt.cond}.pth')

@@ -3,11 +3,11 @@
 #SBATCH --nodes=1
 #SBATCH --gres=gpu:v100-pcie:1
 #SBATCH --time=06:00:00
-#SBATCH --job-name=gpu_r
+#SBATCH --job-name=exp2_r
 #SBATCH --mem=10GB
 #SBATCH --ntasks=1
-#SBATCH --output=log/rumi/output_%j.txt
-#SBATCH --error=log/rumi/error_%j.txt
+#SBATCH --output=log/exp2/rumi/output_%j.txt
+#SBATCH --error=log/exp2/rumi/error_%j.txt
 module load anaconda3/2022.05
 module load python/3.8.1
 pip install -r requirements.txt

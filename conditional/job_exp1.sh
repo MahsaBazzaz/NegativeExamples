@@ -3,11 +3,11 @@
 #SBATCH --nodes=1
 #SBATCH --gres=gpu:v100-pcie:1
 #SBATCH --time=06:00:00
-#SBATCH --job-name=gpu_c
+#SBATCH --job-name=exp1_c
 #SBATCH --mem=10GB
 #SBATCH --ntasks=1
-#SBATCH --output=log/conditional/output_%j.txt
-#SBATCH --error=log/conditional/error_%j.txt
+#SBATCH --output=log/exp1/conditional/output_%j.txt
+#SBATCH --error=log/exp1/conditional/error_%j.txt
 module load anaconda3/2022.05
 module load python/3.8.1
 pip install -r requirements.txt
