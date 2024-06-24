@@ -264,6 +264,10 @@ def get_reach_move(game):
         return "tomb"
     elif game == "crates":
         return None
+    elif game == "mario":
+        return "platform"
+    elif game == "cave_treasures":
+        return "maze"
     
 def get_cols_rows(game):
     if game == "platform":
