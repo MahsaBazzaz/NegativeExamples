@@ -33,7 +33,7 @@ if __name__ == '__main__':
     nz = 32
     
 
-    modelToLoad = f"{opt.directory}/models/{opt.game}/{opt.instance}/{opt.epochs}/CG*_{opt.cond}.pth"
+    modelToLoad = f"{opt.directory}/models/exp2/{opt.game}/{opt.instance}/{opt.epochs}/CG*_{opt.cond}.pth"
     matching_files = find_matching_file(modelToLoad)
     if len(matching_files)  > 0:
         print(matching_files)
@@ -72,7 +72,7 @@ if __name__ == '__main__':
     level = level[:,:,:cols,:rows]
     level = numpy.argmax( level, axis = 1)
 
-    directory = f"{opt.directory}/artifacts/{opt.game}/{opt.instance}/{opt.epochs}/C_{opt.epochs}"
+    directory = f"{opt.directory}/artifacts/exp2/{opt.game}/{opt.instance}/{opt.epochs}/C_{opt.epochs}"
     
     if not os.path.exists(directory):
         os.makedirs(directory)
