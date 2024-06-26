@@ -30,11 +30,11 @@ if __name__ == '__main__':
 
     modelToLoad = f"{opt.directory}/models/exp1/{opt.game}/{opt.instance}/{opt.epochs}/VG*.pth"
     matching_files = find_matching_file(modelToLoad)
-    if len(matching_files) == 0:
-        print("ERROR: No Trained Models")
     if len(matching_files) > 0:
         matching_files = matching_files[0]
         print(f"Found Trained Model: {matching_files}")
+    else:
+        raise ValueError("No trained models found.")
     nz = 32
     batch_size = opt.batchsize
     #nz = 10 #Dimensionality of latent vector

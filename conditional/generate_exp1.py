@@ -37,6 +37,9 @@ if __name__ == '__main__':
     if len(matching_files)  > 0:
         print(matching_files)
         matching_files = matching_files[0]
+    else:
+        raise ValueError("No trained models found.")
+    
     batch_size = opt.batchsize
     #nz = 10 #Dimensionality of latent vector
 

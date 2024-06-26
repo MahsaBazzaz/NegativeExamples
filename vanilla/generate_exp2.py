@@ -29,13 +29,19 @@ if __name__ == '__main__':
 
     opt = parser.parse_args()
 
-    modelToLoad = f"{opt.directory}/models/{opt.game}/exp2/{opt.instance}/{opt.epochs}/VG*_{opt.cond}.pth"
+    modelToLoad = f"{opt.directory}/models/exp2/{opt.game}/{opt.instance}/{opt.epochs}/VG*_{opt.cond}.pth"
     matching_files = find_matching_file(modelToLoad)
-    if len(matching_files) == 0:
-        print("ERROR: No Trained Models")
     if len(matching_files) > 0:
         matching_files = matching_files[0]
         print(f"Found Trained Model: {matching_files}")
+    else:
+        modelToLoad = f"{opt.directory}/models/exp2/{opt.game}/{opt.instance}/{opt.epochs}/VG*_{opt.cond}*.pth"
+        matching_files = find_matching_file(modelToLoad)
+        if len(matching_files)  > 0:
+            print(matching_files)
+            matching_files = matching_files[0]
+        else:
+            raise ValueError("No trained models found.")
     nz = 32
     batch_size = opt.batchsize
     #nz = 10 #Dimensionality of latent vector
