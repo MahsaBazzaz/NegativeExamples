@@ -29,7 +29,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--game', type=str, default='mario')
 parser.add_argument('--instance', type=str)
 parser.add_argument('--cond', type=int, default=1)
-parser.add_argument('--s', type=int)
+parser.add_argument('--s', type=int, default=0)
 parser.add_argument('--f', type=int)
 
 parser.add_argument('--nz', type=int, default=32, help='size of the latent z vector')
@@ -262,15 +262,15 @@ for epoch in range(epochs + 1):
         gen_iterations += 1
 
         print('[%d/%d][%d/%d][%d] Loss_D: %f Loss_G: %f Loss_D_real: %f Loss_D_fake %f'
-            % (epoch, epochs, i, num_batches, gen_iterations,
+            % (opt.s + epoch, opt.s + epochs, i, num_batches, gen_iterations,
             errD.data[0], errG.data[0], errD_real.data[0], errD_fake.data[0]))
 
     if epoch % 500 == 0 and epoch > 0:
-        make_sure_dir_exists(f"{main_dir}/{epoch}")
+        make_sure_dir_exists(f"{main_dir}/{epoch + opt.s}")
 
-        print(f"<><> saved model on epoch {epoch}")
-        torch.save(netG.state_dict(), f'{main_dir}/{epoch}/CG_{opt.cond}_checkpoint_{epochs}.pth')
-        torch.save(netD.state_dict(), f'{main_dir}/{epoch}/CD_{opt.cond}_checkpoint_{epochs}.pth')
+        print(f"<><> saved model on epoch {opt.s + epoch}")
+        torch.save(netG.state_dict(), f'{main_dir}/{opt.s + epoch}/CG_{opt.cond}_checkpoint_{opt.s + epochs}.pth')
+        torch.save(netD.state_dict(), f'{main_dir}/{opt.s + epoch}/CD_{opt.cond}_checkpoint_{opt.s + epochs}.pth')
     
 make_sure_dir_exists(f"{main_dir}/{opt.f}")
 torch.save(netG.state_dict(), f'{main_dir}/{opt.f}/CG_{opt.cond}.pth')
