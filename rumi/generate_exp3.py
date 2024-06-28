@@ -28,12 +28,12 @@ if __name__ == '__main__':
 
     opt = parser.parse_args()
 
-    modelToLoad = f"{opt.directory}/models/exp2/{opt.game}/{opt.instance}/{opt.epochs}/RG*_{opt.cond}.pth"
+    modelToLoad = f"{opt.directory}/models/exp3/{opt.game}/{opt.instance}/{opt.epochs}/RG*_{opt.cond}.pth"
     matching_files = find_matching_file(modelToLoad)
     if len(matching_files)  > 0:
         matching_files = matching_files[0]
     else:
-        modelToLoad = f"{opt.directory}/models/exp2/{opt.game}/{opt.instance}/{opt.epochs}/RG*_{opt.cond}*.pth"
+        modelToLoad = f"{opt.directory}/models/exp3/{opt.game}/{opt.instance}/{opt.epochs}/RG*_{opt.cond}*.pth"
         matching_files = find_matching_file(modelToLoad)
         if len(matching_files)  > 0:
             print(matching_files)
@@ -65,7 +65,7 @@ if __name__ == '__main__':
     level = level[:,:,:cols,:rows]
     level = numpy.argmax( level, axis = 1)
 
-    directory = f"{opt.directory}/artifacts/exp2/{opt.game}/{opt.instance}/{opt.epochs}/R/{opt.cond}"
+    directory = f"{opt.directory}/artifacts/exp3/{opt.game}/{opt.instance}/{opt.epochs}/R/{opt.cond}"
     
     if not os.path.exists(directory):
         os.makedirs(directory)

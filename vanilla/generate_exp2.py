@@ -68,7 +68,7 @@ if __name__ == '__main__':
     level = level[:,:,:cols,:rows]
     level = numpy.argmax( level, axis = 1)
 
-    directory = f"{opt.directory}/artifacts/exp2/{opt.game}/{opt.instance}/{opt.epochs}/V_{opt.epochs}"
+    directory = f"{opt.directory}/artifacts/exp2/{opt.game}/{opt.instance}/{opt.epochs}/V/{opt.cond}"
     
     if not os.path.exists(directory):
         os.makedirs(directory)

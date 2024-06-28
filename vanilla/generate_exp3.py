@@ -1,17 +1,18 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import pdb
 import torch
 import torchvision.utils as vutils
 from torch.autograd import Variable
 from datetime import datetime
 import subprocess
+import sys
 import numpy
 import models.dcgan as dcgan
 from utils.data import map_output_to_symbols
 import argparse
 from utils.data import find_matching_file, get_reach_move, get_cols_rows, get_z_dims
-
 
 if __name__ == '__main__':
     # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -19,7 +20,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--epochs', type=str, default=10000)
     parser.add_argument('--cond', type=int, default=1)
-    parser.add_argument('--game', type=str, default='mario')
+    parser.add_argument('--game', type=str)
     parser.add_argument('--instance', type=str)
     parser.add_argument('--directory', type=str, default='./out')
     parser.add_argument('--image', type=bool, default=False)
@@ -28,12 +29,13 @@ if __name__ == '__main__':
 
     opt = parser.parse_args()
 
-    modelToLoad = f"{opt.directory}/models/exp2/{opt.game}/{opt.instance}/{opt.epochs}/RG*_{opt.cond}.pth"
+    modelToLoad = f"{opt.directory}/models/exp3/{opt.game}/{opt.instance}/{opt.epochs}/VG*_{opt.cond}.pth"
     matching_files = find_matching_file(modelToLoad)
-    if len(matching_files)  > 0:
+    if len(matching_files) > 0:
         matching_files = matching_files[0]
+        print(f"Found Trained Model: {matching_files}")
     else:
-        modelToLoad = f"{opt.directory}/models/exp2/{opt.game}/{opt.instance}/{opt.epochs}/RG*_{opt.cond}*.pth"
+        modelToLoad = f"{opt.directory}/models/exp3/{opt.game}/{opt.instance}/{opt.epochs}/VG*_{opt.cond}*.pth"
         matching_files = find_matching_file(modelToLoad)
         if len(matching_files)  > 0:
             print(matching_files)
@@ -43,7 +45,6 @@ if __name__ == '__main__':
     nz = 32
     batch_size = opt.batchsize
     #nz = 10 #Dimensionality of latent vector
-    
     imageSize = 64
     ngf = 64
     ngpu = 1
@@ -52,9 +53,11 @@ if __name__ == '__main__':
 
     generator = dcgan.DCGAN_G(imageSize, nz, z_dims, ngf, ngpu, n_extra_layers)
     generator.load_state_dict(torch.load(matching_files, map_location=lambda storage, loc: storage))
-
     lv = torch.randn(batch_size, nz, 1, 1, device=device)
     latent_vector = torch.FloatTensor( lv ).view(batch_size, nz, 1, 1) 
+
+    # latent_vector = torch.empty((batch_size, nz, 1, 1), dtype=lv.dtype, device=lv.device)
+    # latent_vector = latent_vector.view(batch_size, nz, 1, 1)
 
     levels = generator(Variable(latent_vector, volatile=True))
 
@@ -65,7 +68,7 @@ if __name__ == '__main__':
     level = level[:,:,:cols,:rows]
     level = numpy.argmax( level, axis = 1)
 
-    directory = f"{opt.directory}/artifacts/exp2/{opt.game}/{opt.instance}/{opt.epochs}/R/{opt.cond}"
+    directory = f"{opt.directory}/artifacts/exp3/{opt.game}/{opt.instance}/{opt.epochs}/V/{opt.cond}"
     
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -90,7 +93,10 @@ if __name__ == '__main__':
             try:
                 reach_move = get_reach_move(opt.game)
                 script_path = './sturgeon/level2repath.py'
-                arguments = ['--outfile', directory + "/" + str(i) + ".path.lvl",'--textfile', directory + "/" + str(i) + ".lvl",'--reach-connect', "--src { --dst } --move " + reach_move]
+                arguments = ['--outfile', 
+                             directory + "/" + str(i) + ".path.lvl",
+                             '--textfile', directory + "/" + str(i) + ".lvl",
+                             '--reach-connect', "--src { --dst } --move " + reach_move]
                 command = ['python', script_path] + arguments
                 print(command)
                 result = subprocess.run(command, check=True)
@@ -104,6 +110,7 @@ if __name__ == '__main__':
                 print("Path does not exist. Level Unplayble.")
                 vis_path = directory + "/" + str(i) + ".lvl"
 
+        
         if opt.image == True:
             script_path = './level2image/level2image.py'
             arguments = [vis_path,

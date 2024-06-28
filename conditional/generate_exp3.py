@@ -1,21 +1,23 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import pdb
 import torch
 import torchvision.utils as vutils
 from torch.autograd import Variable
 from datetime import datetime
 import subprocess
 import numpy
-import models.dcgan as dcgan
+import models.cdcgan as cdcgan
 from utils.data import map_output_to_symbols
 import argparse
 from utils.data import find_matching_file, get_reach_move, get_cols_rows, get_z_dims
-
+import numpy as np
 
 if __name__ == '__main__':
     # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     device = torch.device("cpu")
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--epochs', type=str, default=10000)
     parser.add_argument('--cond', type=int, default=1)
@@ -28,35 +30,49 @@ if __name__ == '__main__':
 
     opt = parser.parse_args()
 
-    modelToLoad = f"{opt.directory}/models/exp2/{opt.game}/{opt.instance}/{opt.epochs}/RG*_{opt.cond}.pth"
+    nz = 32
+    
+
+    modelToLoad = f"{opt.directory}/models/exp3/{opt.game}/{opt.instance}/{opt.epochs}/CG*_{opt.cond}.pth"
     matching_files = find_matching_file(modelToLoad)
     if len(matching_files)  > 0:
+        print(matching_files)
         matching_files = matching_files[0]
     else:
-        modelToLoad = f"{opt.directory}/models/exp2/{opt.game}/{opt.instance}/{opt.epochs}/RG*_{opt.cond}*.pth"
+        modelToLoad = f"{opt.directory}/models/exp3/{opt.game}/{opt.instance}/{opt.epochs}/CG*_{opt.cond}*.pth"
         matching_files = find_matching_file(modelToLoad)
         if len(matching_files)  > 0:
             print(matching_files)
             matching_files = matching_files[0]
         else:
             raise ValueError("No trained models found.")
-    nz = 32
+
     batch_size = opt.batchsize
     #nz = 10 #Dimensionality of latent vector
-    
+
     imageSize = 64
     ngf = 64
     ngpu = 1
     n_extra_layers = 0
     z_dims = get_z_dims(opt.game) #number different titles
 
-    generator = dcgan.DCGAN_G(imageSize, nz, z_dims, ngf, ngpu, n_extra_layers)
+    y_dims = 1
+
+    generator = cdcgan.DCGAN_G(imageSize, nz + y_dims, z_dims, ngf, ngpu, n_extra_layers)
+
     generator.load_state_dict(torch.load(matching_files, map_location=lambda storage, loc: storage))
 
     lv = torch.randn(batch_size, nz, 1, 1, device=device)
     latent_vector = torch.FloatTensor( lv ).view(batch_size, nz, 1, 1) 
 
-    levels = generator(Variable(latent_vector, volatile=True))
+    # labels = torch.zeros(batch_size, 3)
+    # labels[:, cond] = 1  # Set the first column to 1
+    # labels = torch.ones(batch_size)
+    
+    # labels = torch.FloatTensor(np.tile([[1, 0]], (batch_size, 1)))
+    labels = torch.full((batch_size,), 0)
+
+    levels = generator(Variable(latent_vector, volatile=True), Variable(labels))
 
     #levels.data = levels.data[:,:,:14,:28] #Cut of rest to fit the 14x28 tile dimensions
 
@@ -65,7 +81,7 @@ if __name__ == '__main__':
     level = level[:,:,:cols,:rows]
     level = numpy.argmax( level, axis = 1)
 
-    directory = f"{opt.directory}/artifacts/exp2/{opt.game}/{opt.instance}/{opt.epochs}/R/{opt.cond}"
+    directory = f"{opt.directory}/artifacts/exp3/{opt.game}/{opt.instance}/{opt.epochs}/C/{opt.cond}"
     
     if not os.path.exists(directory):
         os.makedirs(directory)
