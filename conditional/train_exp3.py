@@ -197,8 +197,7 @@ dataloader = DataLoader(train_dataset, batch_size=opt.batchSize, shuffle=True, d
 num_batches = len(dataloader)
 gen_iterations = 0
 for epoch in range(epochs + 1):
-    i = 0
-    while i < num_batches:
+    for data, label  in dataloader:
         ############################
         # (1) Update D network
         ###########################
@@ -212,14 +211,14 @@ for epoch in range(epochs + 1):
             Diters = opt.Diters
 
         j = 0
-        while j < Diters and i < num_batches:
+        while j < Diters:
             j += 1
 
             for p in netD.parameters():
                 p.data.clamp_(opt.clamp_lower, opt.clamp_upper)
 
             data, label = next(iter(dataloader))
-            i += 1
+            # i += 1
 
             real_cpu = data
             real_label = label
@@ -261,8 +260,8 @@ for epoch in range(epochs + 1):
         optimizerG.step()
         gen_iterations += 1
 
-        print('[%d/%d][%d/%d][%d] Loss_D: %f Loss_G: %f Loss_D_real: %f Loss_D_fake %f'
-            % (opt.s + epoch, opt.s + epochs, i, num_batches, gen_iterations,
+        print('[%d/%d][%d] Loss_D: %f Loss_G: %f Loss_D_real: %f Loss_D_fake %f'
+            % (opt.s + epoch, opt.s + epochs, gen_iterations,
             errD.data[0], errG.data[0], errD_real.data[0], errD_fake.data[0]))
 
     if epoch % 500 == 0 and epoch > 0:

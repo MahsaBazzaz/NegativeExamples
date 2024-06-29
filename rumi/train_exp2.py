@@ -191,8 +191,7 @@ for epoch in range(epochs + 1):
     # X_train_neg = X_train_neg[perm]
 
 
-    i = 0
-    while i < num_batches:#len(dataloader):
+    for data_pos, data_neg in zip(dataloader_pos, dataloader_neg):
         ############################
         # (1) Update D network
         ###########################
@@ -205,7 +204,7 @@ for epoch in range(epochs + 1):
         else:
             Diters = opt.Diters
         j = 0
-        while j < Diters and i < num_batches:#len(dataloader):
+        while j < Diters:
             j += 1
 
             # clamp parameters to a cube
@@ -219,9 +218,9 @@ for epoch in range(epochs + 1):
             #     data_pos = X_train_pos[i*opt.batchSize:]
             #     data_neg = X_train_neg[i*opt.batchSize:]
 
-            data_pos = next(iter(dataloader_pos))
-            data_neg = next(iter(dataloader_neg))
-            i += 1
+            # data_pos = next(iter(dataloader_pos))
+            # data_neg = next(iter(dataloader_neg))
+            # i += 1
 
             # if len(data_pos) == opt.batchSize and len(data_neg) == opt.batchSize:
             real_cpu_pos = torch.FloatTensor(data_pos[0])
@@ -277,8 +276,8 @@ for epoch in range(epochs + 1):
         optimizerG.step()
         gen_iterations += 1
 
-        print('[%d/%d][%d/%d][%d] Loss_D: %f Loss_G: %f Loss_D_real_pos: %f Loss_D_real_neg: %f Loss_D_fake %f'
-            % (epoch + opt.s, epochs + opt.s, i, num_batches, gen_iterations,
+        print('[%d/%d][%d] Loss_D: %f Loss_G: %f Loss_D_real_pos: %f Loss_D_real_neg: %f Loss_D_fake %f'
+            % (epoch + opt.s, epochs + opt.s, gen_iterations,
             errD.data[0], errG.data[0], errD_real_pos.data[0], errD_real_neg.data[0], errD_fake.data[0]))
 
     # do checkpointing
