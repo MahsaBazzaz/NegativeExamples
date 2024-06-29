@@ -250,7 +250,7 @@ for epoch in range(epochs + 1):
 
             # Sum all losses
             # errD = (real_pos_loss - fake_loss) + 0.5 * (real_neg_loss - fake_loss)
-            errD = real_pos_loss - fake_loss - real_neg_loss
+            errD = real_pos_loss - fake_loss - 0.5 * real_neg_loss
             # errD = errD_real_pos - errD_fake
             optimizerD.step()
             # else:
