@@ -67,7 +67,7 @@ print(f"device = {device}")
 if torch.cuda.is_available() and not opt.cuda:
     print("WARNING: You have a CUDA device, so you should probably run with --cuda")
  
-map_size = 64
+map_size = 32
 if opt.game == "mario" or opt.game == "cave_treasures":
     X_pos_1 = get_positive_db(opt.game, 1)
     X_pos_2 = get_positive_db(opt.game, 2)

@@ -81,7 +81,7 @@ else:
     X = X_all[indices]
     y = y_all[indices]
 
-map_size = 64
+map_size = 32
 
 z_dims = X.shape[3] #Numer different title types
 

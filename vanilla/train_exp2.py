@@ -76,7 +76,7 @@ if opt.game == "mario" or opt.game == "cave_treasures":
     elif opt.cond == 3:
         X = get_positive_db(opt.game, 3)
 
-map_size = 64
+map_size = 32
 
 z_dims = X.shape[3] #Numer different title types
 

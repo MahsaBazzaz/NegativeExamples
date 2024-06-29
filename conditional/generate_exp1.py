@@ -43,7 +43,7 @@ if __name__ == '__main__':
     batch_size = opt.batchsize
     #nz = 10 #Dimensionality of latent vector
 
-    imageSize = 64
+    imageSize = 32
     ngf = 64
     ngpu = 1
     n_extra_layers = 0
