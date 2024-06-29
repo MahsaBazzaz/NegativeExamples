@@ -277,7 +277,7 @@ for epoch in range(epochs + 1):
             errD.data[0], errG.data[0], errD_real_pos.data[0], errD_real_neg.data[0], errD_fake.data[0]))
 
     # do checkpointing
-    if epoch % 500 == 0 and epoch > 0:
+    if epoch % 100 == 0 and epoch > 0:
         make_sure_dir_exists(f"{main_dir}/{epoch + opt.s}")
         torch.save(netG.state_dict(), f'{main_dir}/{epoch + opt.s}/RG_{opt.cond}_checkpoint_{epochs + opt.s}.pth')
         torch.save(netD.state_dict(), f'{main_dir}/{epoch + opt.s}/RD_{opt.cond}_checkpoint_{epochs + opt.s}.pth')
