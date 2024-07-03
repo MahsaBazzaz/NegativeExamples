@@ -16,6 +16,18 @@ sokoban_chars_unique = sorted(list(["-","X", "@", "#", "o"]))
 mario_chars_unique = sorted(list(["-","X", "}", "{", "<", ">", "[", "]", "Q", "S"]))
 cave_treasures_chars_unique = sorted(list(["-","X", "}", "{", "2"]))
 
+def make_arrays_equal_length(arr1, arr2):
+    len1 = len(arr1)
+    len2 = len(arr2)
+
+    if len1 > len2:
+        np.random.shuffle(arr1)  # Shuffle the bigger array
+        arr1 = arr1[:len2]
+    elif len2 > len1:
+        np.random.shuffle(arr2)  # Shuffle the bigger array
+        arr2 = arr2[:len1]
+    return np.array(arr1), np.array(arr2)
+
 def find_matching_file(pattern):
     matching_files = glob.glob(pattern)
     return matching_files

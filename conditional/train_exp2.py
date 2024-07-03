@@ -22,7 +22,7 @@ from torch.utils.data import DataLoader, Dataset, TensorDataset
 
 import models.cdcgan as cdcgan
 from utils.file import make_sure_dir_exists
-from utils.data import find_matching_file, get_positive, get_negative, get_positive_db, get_negative_db
+from utils.data import find_matching_file, get_positive, get_negative, get_positive_db, get_negative_db, make_arrays_equal_length
 
 
 parser = argparse.ArgumentParser()
@@ -106,6 +106,8 @@ if opt.game == "mario" or opt.game == "cave_treasures":
 
 X = np.concatenate((X_pos, X_neg))
 y = np.concatenate((y_pos, y_neg))
+
+X, y = make_arrays_equal_length(X, y)
 
 z_dims = X_pos.shape[3] #Numer different title types
 
