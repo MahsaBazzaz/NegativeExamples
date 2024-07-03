@@ -107,8 +107,6 @@ else:
 X = np.concatenate((X_pos, X_neg))
 y = np.concatenate((y_pos, y_neg))
 
-X, y = make_arrays_equal_length(X, y)
-
 z_dims = X_pos.shape[3] #Numer different title types
 
 shape = y.shape
